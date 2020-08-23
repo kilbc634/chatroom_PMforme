@@ -113,6 +113,24 @@ Chat Title
   width: 100%;
   height: auto;
 }
+.chat-title .logout {
+  float: right;
+  z-index: 3;
+  color: #fff;
+  border: none;
+  background: #ad4343;
+  font-size: 10px;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 6px 10px;
+  border-radius: 10px;
+  outline: none !important;
+  -webkit-transition: background .2s ease;
+  transition: background .2s ease;
+}
+.chat-title .logout:hover {
+  background: #821e1e;
+}
 
 /*--------------------
 Messages
