@@ -71,21 +71,14 @@ def dynamic_dbModel(tableName):
 
 def create_messageTable(username):
     newClass = dynamic_dbModel('Message__' + username)
-    for clazz in db.Model._decl_class_registry.values():
-        print('[INFO] ' + str(clazz))
     db.create_all()
     db.session.commit()
-    print('[INFO] db.create_all')
-    for clazz in db.Model._decl_class_registry.values():
-        print('[INFO] ' + str(clazz))
 
 
 def get_messageTable(username):
     targetTable = None
     for clazz in db.Model._decl_class_registry.values():
-        print('[INFO] ' + str(clazz))
         try:
-            print('[INFO] ' + str(clazz.__tablename__))
             if clazz.__tablename__ == 'Message__' + username:
                 targetTable = clazz
         except:
@@ -213,8 +206,6 @@ def join(message):
 
 @socketio.on('connect')
 def test_connect():
-    # Userid = session.get('UserId')
-    # print(Userid, 'connectd')
     print('connect')
 
 
