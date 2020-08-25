@@ -4,7 +4,7 @@ from flask_login import UserMixin, LoginManager, login_required, current_user, l
 from dbModel import UserAccounts, Message, db
 from functools import wraps
 from PIL import Image
-from datetime import datetime
+from datetime import datetime, timedelta
 import base64
 import os
 import uuid
@@ -16,6 +16,7 @@ MugShot_FOLDER = os.path.join(APP_ROOT, MugShot_PATH)
 
 app = Flask(__name__)
 app.secret_key = 'super secret string'  # Change this!
+app.send_file_max_age_default = timedelta(seconds=1)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.session_protection = "strong"
@@ -104,12 +105,21 @@ def apply_caching(response):
 
 @app.route('/test_point', methods=['GET'])
 def test_point():
-    print(db.Model._decl_class_registry)
-    vals = db.Model._decl_class_registry.values()
-    for val in vals:
-        print(val)
-    
-    print(dir(db.Model))
+    user_id = session.get('user_id')
+    messageClass = get_messageTable(user_id)
+
+    message_data = db.session.query(
+        messageClass,
+        UserAccounts.MugShot,
+        UserAccounts.UserNick
+    ).join(
+        UserAccounts,
+        UserAccounts.UserName == messageClass.UserName
+    )
+    print(message_data)
+    for data in message_data.all():
+        print(data)
+        print(data[0].__dict__)
     return "OK"
 
 
@@ -122,22 +132,32 @@ def index():
 
     message_data = db.session.query(
         messageClass,
-        UserAccounts.MugShot
+        UserAccounts.MugShot,
+        UserAccounts.UserNick
     ).join(
         UserAccounts,
         UserAccounts.UserName == messageClass.UserName
     ).all()
 
-    mug_shot_title = UserAccounts.query.filter_by(UserName=user_id).first().MugShot
+    userData = UserAccounts.query.filter_by(UserName=user_id).first()
+    mug_shot_title = userData.MugShot
+    current_user_name = ''
+    if userData.UserNick == '' or None:
+        current_user_name = userData.UserName
+    else:
+        current_user_name = userData.UserNick
     messages_dic = {}
     messages_list = []
     for message in message_data:
         messages_dic['data'] = []
-        object_data = getattr(message, 'Message__' + user_id)
-        messages_dic['UserName'] = object_data.UserName
-        messages_dic['Messages'] = object_data.Messages
+        a_msg = getattr(message, 'Message__' + user_id)
+        if message.UserNick == '' or None:
+            messages_dic['UserName'] = a_msg.UserName
+        else:
+            messages_dic['UserName'] = message.UserNick
+        messages_dic['Messages'] = a_msg.Messages
         messages_dic['MugShot'] = message.MugShot
-        messages_dic['CreateDate'] = object_data.CreateDate.strftime('%H:%M')
+        messages_dic['CreateDate'] = a_msg.CreateDate.strftime('%H:%M')
         messages_list.append(messages_dic)
         messages_dic = {}
     return render_template("index.html", **locals())
@@ -222,14 +242,32 @@ def send_inquiry(msg):
     )
     db.session.add(data_message)
     db.session.commit()
-    mug_shot = UserAccounts.query.filter_by(UserName=user_id).first().MugShot
+    userData = UserAccounts.query.filter_by(UserName=user_id).first()
+    mug_shot = userData.MugShot
+    user_name = ''
+    if userData.UserNick == '' or None:
+        user_name = userData.UserName
+    else:
+        user_name = userData.UserNick
     data = {
         'time': create_date.strftime('%H:%M'),
-        'Name': user_id,
+        'Name': user_name,
         'PictureUrl': mug_shot,
         'msg': msg['msg'],
     }
     emit('getInquiry', data, room=user_id)
+
+
+@app.route('/set_nick', methods=['POST'])
+def set_nick():
+    user_id = session.get('user_id')
+    nick = request.json['nick']
+    
+    userData = UserAccounts.query.filter_by(UserName=user_id).first()
+    userData.UserNick = nick
+    userData.ModifiedDate = datetime.now()
+    db.session.commit()
+    return "OK", 200
 
 
 @app.route('/croppic', methods=['GET', 'POST'])
