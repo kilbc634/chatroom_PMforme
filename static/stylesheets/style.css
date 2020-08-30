@@ -13,6 +13,7 @@ Body
 html,
 body {
   height: 100%;
+  font-size: 15px !important;
 }
 
 body {
@@ -20,7 +21,6 @@ body {
   background: linear-gradient(135deg, #044f48, #2a7561);
   background-size: cover;
   font-family: 'Open Sans', sans-serif;
-  font-size: 12px;
   line-height: 1.3;
   overflow: hidden;
 }
@@ -83,24 +83,22 @@ Chat Title
   color: #fff;
   /*text-transform: uppercase;*/
   text-align: left;
-  padding: 10px 10px 10px 50px;
+  padding: 10px 10px 10px 10px;
 }
 .chat-title h1, .chat-title h2 {
   font-weight: normal;
-  font-size: 10px;
+  font-size: 1.6rem;
   margin: 0;
   padding: 0;
 }
 .chat-title h2 {
   color: rgba(255, 255, 255, 0.5);
-  font-size: 8px;
+  font-size: 1.4rem;
   letter-spacing: 1px;
 }
 .chat-title .avatar {
-  position: absolute;
+  position: relative;
   z-index: 1;
-  top: 8px;
-  left: 9px;
   border-radius: 30px;
   width: 30px;
   height: 30px;
@@ -119,7 +117,7 @@ Chat Title
   color: #fff;
   border: none;
   background: #ad4343;
-  font-size: 10px;
+  font-size: 1.3rem;
   text-transform: uppercase;
   line-height: 1;
   padding: 6px 10px;
@@ -159,7 +157,7 @@ Messages
   border-radius: 10px 10px 10px 0;
   background: rgba(0, 0, 0, 0.3);
   margin: 8px 0;
-  font-size: 15px;
+  font-size: 1rem;
   line-height: 1.4;
   margin-left: 35px;
   position: relative;
@@ -168,8 +166,9 @@ Messages
 .messages .message .timestamp {
   position: absolute;
   bottom: -15px;
-  font-size: 9px;
+  font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
 }
 .messages .message::before {
   content: '';
@@ -222,6 +221,7 @@ Messages
           transform-origin: 0 0;
   -webkit-animation: bounce 500ms linear both;
           animation: bounce 500ms linear both;
+          word-break: break-word;
 }
 .messages .message.loading::before {
   position: absolute;
@@ -297,35 +297,33 @@ Message Box
   -webkit-flex: 0 1 40px;
       -ms-flex: 0 1 40px;
           flex: 0 1 40px;
-  width: 100%;
   background: rgba(0, 0, 0, 0.3);
   padding: 10px;
   position: relative;
 }
 .message-box .message-input {
+  position: relative;
   background: none;
   border: none;
   outline: none !important;
   resize: none;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 11px;
-  height: 17px;
+  font-size: 1.2rem;
+  height: 1.7rem;
   margin: 0;
-  padding-right: 20px;
-  width: 98%;
+  width: 100%;
+  overflow: hidden;
 }
 .message-box textarea:focus:-webkit-placeholder {
   color: transparent;
 }
 .message-box .message-submit {
-  position: absolute;
+  position: relative;
   z-index: 1;
-  top: 9px;
-  right: 10px;
   color: #fff;
   border: none;
   background: #248A52;
-  font-size: 10px;
+  font-size: 1.3rem;
   text-transform: uppercase;
   line-height: 1;
   padding: 6px 10px;
@@ -484,5 +482,12 @@ Bounce
   to {
     -webkit-transform: translateY(-10px);
             transform: translateY(-10px);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 100% !important;
+    max-width: none !important;
   }
 }
