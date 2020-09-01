@@ -39,6 +39,28 @@ $(function () {
         socket.emit('sendInquiry', obj);
     }
 
+    function sendNickName(name) {
+        var obj = {
+            nick: name
+        };
+        var data_json = JSON.stringify(obj);
+        console.log("send data!");
+        $.ajax({
+            url: "/set_nick",
+            type: "POST",
+            data: data_json,
+            async: true,
+            contentType: "application/json",
+            success: function (data, textStatus, jqXHR) {
+                console.log("data = ");
+                console.log(data);
+                if (data == "OK") {
+                    location.reload();
+                }
+            }
+        });
+    }
+
 
     socket.on('getInquiry', function (msg) {
         //console.log(msg.msg);
@@ -58,6 +80,14 @@ $(function () {
             insertMessage();
             return false;
         }
+    });
+
+    $('.setNick-submit').click(function () {
+        var nickName = $('.setNick-input').val();
+        if ($.trim(nickName) == '') {
+            return false;
+        }
+        sendNickName(nickName);
     });
 
 

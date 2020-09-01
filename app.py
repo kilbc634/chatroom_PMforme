@@ -142,10 +142,12 @@ def index():
     userData = UserAccounts.query.filter_by(UserName=user_id).first()
     mug_shot_title = userData.MugShot
     current_user_name = ''
+    current_user_nick = ''
     if userData.UserNick == '' or None:
         current_user_name = userData.UserName
     else:
         current_user_name = userData.UserNick
+        current_user_nick = userData.UserNick
     messages_dic = {}
     messages_list = []
     for message in message_data:

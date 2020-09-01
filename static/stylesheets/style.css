@@ -486,7 +486,7 @@ Bounce
 }
 
 @media (max-width: 768px) {
-  .container {
+  .chat.container {
     width: 100% !important;
     max-width: none !important;
   }
