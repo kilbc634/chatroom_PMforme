@@ -1,4 +1,4 @@
-from flask import Flask, session, redirect, render_template, request, flash, url_for, json
+from flask import Flask, session, redirect, render_template, request, flash, url_for, json, jsonify
 from flask_socketio import SocketIO, emit, join_room
 from flask_login import UserMixin, LoginManager, login_required, current_user, login_user, logout_user
 from dbModel import UserAccounts, Message, db
@@ -10,6 +10,7 @@ import os
 import uuid
 import io
 import requests
+import traceback
 
 MugShot_PATH = 'static/mugshot'
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -335,7 +336,8 @@ def croppic():
                           (0, 0, crop_w, crop_h))
 
         uuid_name = str(uuid.uuid1())
-        mugshot = '{}.{}'.format(uuid_name, image_format)
+        mugshot = '{}.{}'.format(uuid_name, '.png')
+        #mugshot = '{}.{}'.format(uuid_name, image_format)
         user_mugshot = UserAccounts.query.filter_by(UserName=user_id).first()
         if user_mugshot.MugShot != "default.jpg":
             delete_filename = '{}/{}'.format(MugShot_FOLDER, user_mugshot.MugShot)
@@ -360,12 +362,14 @@ def croppic():
             'url': '/{}/{}'.format(MugShot_PATH, mugshot),
             'filename': mugshot
         }
-        return json.dumps(data)
+        return jsonify(data)
     except Exception as e:
-        return {
+        em = traceback.format_exc()
+        error_data = {
             'status': 'error',
-            'message': str(e),
+            'message': str(em),
         }
+        return jsonify(error_data)
 
 
 if __name__ == '__main__':
