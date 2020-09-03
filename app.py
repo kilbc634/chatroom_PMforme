@@ -9,6 +9,7 @@ import base64
 import os
 import uuid
 import io
+import requests
 
 MugShot_PATH = 'static/mugshot'
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -259,6 +260,12 @@ def send_inquiry(msg):
     }
     emit('getInquiry', data, room=user_id)
 
+    data = {
+        "sender": "{name}({nick})".format(name=userData.UserName, nick=userData.UserNick),
+        "user": "407554740906360833", # owner user id
+        "message": msg['msg']
+    }
+    resp = requests.post('http://localhost:21090/message_user', json=data)
 
 @app.route('/set_nick', methods=['POST'])
 def set_nick():
@@ -269,7 +276,7 @@ def set_nick():
     userData.UserNick = nick
     userData.ModifiedDate = datetime.now()
     db.session.commit()
-    return "OK", 200
+    return "OK"
 
 
 @app.route('/croppic', methods=['GET', 'POST'])
